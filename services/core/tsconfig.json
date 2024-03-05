@@ -1,0 +1,13 @@
+{
+  "extends": "../backend-services-chassis/tsconfig.json",
+  "include": ["./src/*.ts", "./src/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "paths": {
+      "services/database-module": ["../database-module/src"]
+    }
+  }
+}

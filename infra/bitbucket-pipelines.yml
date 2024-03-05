@@ -1,0 +1,138 @@
+image: hashicorp/terraform:light
+
+definitions:
+  steps:
+    - step: &plan_dev
+        name: '[dev] Terraform Plan'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new dev || true ; terraform workspace select dev ; terraform validate
+          - terraform plan
+    - step: &apply_dev
+        name: '[dev] Terraform Apply'
+        deployment: 'Development'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new dev || true ; terraform workspace select dev ; terraform validate
+          - terraform apply -auto-approve
+    - step: &destroy_dev
+        name: '[dev] Terraform Destroy'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new dev || true ; terraform workspace select dev ; terraform validate
+          - terraform destroy -auto-approve
+    - step: &plan_stg
+        name: '[stg] Terraform plan'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new stg || true ; terraform workspace select stg ; terraform validate
+          - terraform plan
+    - step: &apply_stg
+        name: '[stg] Terraform Apply'
+        deployment: 'Staging'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new stg || true ; terraform workspace select stg ; terraform validate
+          - terraform apply -auto-approve
+    - step: &destroy_stg
+        name: '[stg] Terraform Destroy'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new stg || true ; terraform workspace select stg ; terraform validate
+          - terraform destroy -auto-approve
+    - step: &plan_prd
+        name: '[prd] Terraform Plan'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new prd || true ; terraform workspace select prd ; terraform validate
+          - terraform plan
+    - step: &apply_prd
+        name: '[prd] Terraform Apply'
+        trigger: 'manual'
+        deployment: 'Production'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new prd || true ; terraform workspace select prd ; terraform validate
+          - terraform apply -auto-approve
+    - step: &destroy_prd
+        name: '[prd] Terraform Destroy'
+        script:
+          - export TF_VAR_repository=$BITBUCKET_REPO_FULL_NAME ; export TF_VAR_commit=${BITBUCKET_COMMIT:0:8}
+          - export TF_VAR_dockerhub_username=$DOCKER_USER ; export TF_VAR_dockerhub_password=$DOCKER_PASSWORD
+          - cd terraform/ ; terraform -v ; terraform init 
+          - terraform workspace new prd || true ; terraform workspace select prd ; terraform validate
+          - terraform destroy -auto-approve
+##############################################################################
+pipelines:
+  default: 
+    # Runs on every push
+    - parallel:
+      - step: *plan_dev
+      - step: *plan_stg
+      - step: *plan_prd
+    - step: 
+        <<: *apply_dev
+        trigger: manual
+    
+  pull-requests:
+    # On pull-requests (this merges the working branch with the destination one before run)
+    '**':
+      - parallel:
+        - step: *apply_dev
+        - step: *plan_stg
+        - step: *plan_prd
+
+  branches:
+    master: # when merged to master
+      - step: *apply_dev
+      #- step: *apply_stg
+      - step: *plan_prd
+      - step: *apply_prd
+
+  custom:
+    plan_dev:
+      - step: *plan_dev
+    plan_stg:
+      - step: *plan_stg
+    plan_prd:
+      - step: *plan_prd
+    apply_dev:
+      - step: *apply_dev
+    apply_stg:
+      - step: *apply_stg
+    apply_prd:
+      - step: *plan_prd
+      - step: *apply_prd
+    destroy_dev:
+      - step: *destroy_dev
+    destroy_stg:
+      - step: *destroy_stg
+    destroy_prd:
+      - step: *destroy_prd
+    plan_all:
+      - parallel:
+        - step: *plan_dev
+        - step: *plan_stg
+        - step: *plan_prd
+    destroy_all:
+      - parallel:
+        - step: *destroy_dev
+        - step: *destroy_stg
+        - step: *destroy_prd
+

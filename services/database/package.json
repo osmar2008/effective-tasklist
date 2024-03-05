@@ -1,0 +1,12 @@
+{
+  "name": "database",
+  "packageManager": "yarn@4.1.0",
+  "private": true,
+  "scripts": {
+    "swc": "yarn run -T swc",
+    "build": "yarn swc src --out-dir dist --config-file ../.swcrc --strip-leading-paths"
+  },
+  "dependencies": {
+    "backend-services-chassis": "workspace:*"
+  }
+}

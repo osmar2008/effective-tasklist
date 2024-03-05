@@ -1,0 +1,12 @@
+{
+  "language": "typescript",
+  "app": "yarn ts-node main.ts",
+  "projectId": "4c0da811-0ee5-43ee-9862-e48776a21d22",
+  "sendCrashReports": "true",
+  "terraformProviders": [
+    "aws@~> 4.0",
+    "kreuzwerker/docker"
+  ],
+  "terraformModules": [],
+  "context": {}
+}

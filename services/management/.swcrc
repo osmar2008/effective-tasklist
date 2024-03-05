@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "exclude": ["node_modules", "./**/*.spec.ts"],
+  "isModule": true,
+  "module": {
+    "type": "es6"
+  },
+  "jsc": {
+    "parser": {
+      "tsx": false,
+      "syntax": "typescript",
+      "decorators": true
+    },
+    "keepClassNames": true,
+    "baseUrl": "./",
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "experimental": {
+      "plugins": [
+        [
+          "@swc/plugin-transform-imports",
+          {
+            "^(.*?)(\\.ts)$": {
+              "skipDefaultConversion": true,
+              "transform": "{{matches.[1]}}.js"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}

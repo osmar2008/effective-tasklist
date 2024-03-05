@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TodoModule } from './todo/todo.module';
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { TodoModule } from './todo/todo.module'
+import { DatabaseModule } from 'database/src/database.module'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
-  imports: [TodoModule],
+  imports: [ConfigModule.forRoot({isGlobal: true}), TodoModule, DatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })
