@@ -1,8 +1,14 @@
 {
-  "extends": "../backend-services-chassis/tsconfig.json",
-  "include": ["./**/*.ts"],
+  "extends": "../tsconfig.json",
+  "include": ["./src/*.ts"],
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./"
-  }
+    "baseUrl": "src",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../common-database"
+    }
+  ]
 }

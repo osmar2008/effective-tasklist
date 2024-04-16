@@ -1,30 +1,9 @@
-import { App } from 'cdktf'
-import { AwsStack } from './stacks/aws/main'
-import { LocalStack } from './stacks/local/local'
+import { App } from "cdktf";
 
-// class MyStack extends TerraformStack {
-//   constructor(scope: Construct, id: string) {
-//     super(scope, id)
-//
-//     const image = new Image(this, 'image', {
-//       name: 'nginx:latest',
-//       keepLocally: false,
-//     })
-//
-//     new Container(this, 'nginxContainer', {
-//       image: image.name,
-//       name: 'nginx',
-//       ports: [
-//         {
-//           internal: 80,
-//           external: 8000,
-//         },
-//       ],
-//     })
-//   }
-// }
+import { AwsStack } from "./stacks/aws/aws-stack";
+import { LocalStack } from "./stacks/local/local-stack";
 
-const app = new App()
-new AwsStack(app, 'aws-dev')
-new LocalStack(app, 'local')
-app.synth()
+const app = new App();
+new LocalStack(app, "local");
+new AwsStack(app, "aws");
+app.synth();

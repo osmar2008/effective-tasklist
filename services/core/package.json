@@ -1,20 +1,20 @@
 {
-  "name": "core",
+  "name": "@effective-tasklist/service_core",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "nest": "yarn run -T nest",
-    "swc": "yarn run -T swc",
-    "build": "yarn swc src/ --out-dir ./dist --config-file ${PROJECT_CWD}/services/.swcrc --strip-leading-paths",
+    "swc": "yarn workspace @effective-tasklist/service_chassis run swc",
+    "build": "yarn build:core",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "yarn nest start",
     "start:dev": "yarn nest start --watch",
     "start:debug": "yarn nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "typecheck": "yarn tsc -p $INIT_CWD/tsconfig.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -22,8 +22,24 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "backend-services-chassis": "workspace:*",
-    "database": "workspace:*"
+    "@effective-tasklist/service_database": "workspace:^",
+    "@nestjs/config": "^3.2.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/mapped-types": "*",
+    "@nestjs/platform-express": "*",
+    "class-transformer": "*",
+    "class-validator": "*",
+    "drizzle-orm": "*",
+    "postgres": "^3.4.4",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "*"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "*",
+    "typescript": "^5.4.3"
   },
   "jest": {
     "moduleFileExtensions": [

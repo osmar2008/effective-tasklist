@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "emitDeclarationOnly": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "lib": [
+      "ESNext"
+    ],
+    "baseUrl": "./",
+    "paths": {}
+  }
+}

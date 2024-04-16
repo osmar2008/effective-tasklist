@@ -1,0 +1,42 @@
+{
+  "name": "@effective-tasklist/service_chassis",
+  "packageManager": "yarn@4.1.1",
+  "private": true,
+  "workspaces": [
+    "management",
+    "core",
+    "common-database"
+  ],
+  "scripts": {
+    "build:management": "yarn swc ./management/src -d ./management/dist",
+    "build:core": "cd $INIT_CWD && echo $PWD && yarn swc -f src --source-root src --strip-leading-paths --config-file ../.swcrc",
+    "build": "yarn swc src --out-dir dist/src",
+    "build:ci": "tsc && yarn build"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10",
+    "@nestjs/config": "^3.2.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/mapped-types": "^2.0.4",
+    "@nestjs/platform-express": "^10.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/schematics": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "@swc/cli": "^0.3.9",
+    "@swc/core": "^1.4.0",
+    "@swc/plugin-transform-imports": "^1.5.117",
+    "@types/express": "^4.17.17",
+    "@types/supertest": "^2.0.12",
+    "monorepo-tools": "workspace:*",
+    "source-map-support": "^0.5.21",
+    "supertest": "^6.3.3",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.3"
+  }
+}

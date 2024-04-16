@@ -1,13 +1,20 @@
 {
-  "extends": "../backend-services-chassis/tsconfig.json",
+  "extends": "../tsconfig.json",
   "include": ["./src/*.ts", "./src/**/*.ts"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "rootDir": "./src",
+    "composite": false,
     "outDir": "./dist",
     "lib": ["esnext"],
-    "module": "commonjs",
-    "paths": {
-      "services/database-module": ["../database-module/src"]
+    "module": "node16",
+    "moduleResolution": "node16"
+  },
+  "references": [
+    {
+      "path": "../common-database/tsconfig.build.json"
     }
-  }
+  ]
 }

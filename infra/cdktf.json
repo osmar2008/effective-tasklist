@@ -1,12 +1,12 @@
 {
   "language": "typescript",
   "app": "yarn ts-node main.ts",
-  "projectId": "4c0da811-0ee5-43ee-9862-e48776a21d22",
+  "projectId": "ced1eed1-bb22-4f8d-85ce-1f99b07dda9e",
   "sendCrashReports": "true",
-  "terraformProviders": [
-    "aws@~> 4.0",
-    "kreuzwerker/docker"
-  ],
+  "terraformProviders": ["aws@~> 4.0", "random@~> 3.1"],
   "terraformModules": [],
-  "context": {}
+  "context": {
+    "excludeStackIdFromLogicalIds": "true",
+    "allowSepCharsInLogicalIds": "true"
+  }
 }
