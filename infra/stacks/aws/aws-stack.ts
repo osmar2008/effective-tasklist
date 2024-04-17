@@ -23,7 +23,8 @@ import { RouteTableAssociation } from "@cdktf/provider-aws/lib/route-table-assoc
 import { SecurityGroup } from "@cdktf/provider-aws/lib/security-group";
 import { Subnet } from "@cdktf/provider-aws/lib/subnet";
 import { Vpc } from "@cdktf/provider-aws/lib/vpc";
-
+import { VpcSecurityGroupEgressRule } from "@cdktf/provider-aws/lib/vpc-security-group-egress-rule";
+import { VpcSecurityGroupIngressRule } from "@cdktf/provider-aws/lib/vpc-security-group-ingress-rule";
 import { Password } from "@cdktf/provider-random/lib/password";
 import { RandomProvider } from "@cdktf/provider-random/lib/provider";
 
@@ -61,7 +62,7 @@ export class AwsStack extends TerraformStack {
       },
     });
 
-    const subnet2 = new Subnet(this, "subnet2", {
+    const publicSubnet2 = new Subnet(this, "subnet2", {
       vpcId: vpc.id,
       cidrBlock: "10.0.200.0/24",
       availabilityZone: "us-east-1b",
@@ -93,6 +94,83 @@ export class AwsStack extends TerraformStack {
       subnetIds: [privateSubnet1.id, privateSubnet2.id],
     });
 
+    const dbSecurityGroup = new SecurityGroup(this, "SecurityGroup", {
+      vpcId: vpc.id,
+      name: "db_security_group",
+      description: "Security group for the database",
+    });
+
+    const jumpBoxSecurityGroup = new SecurityGroup(
+      this,
+      "jumpBoxSecurityGroup",
+      {
+        vpcId: vpc.id,
+        name: "jump-box-sg",
+        description: "Security group for Jump Box",
+      }
+    );
+
+    const jumpBox = new Instance(this, "jumpBox", {
+      ami: "ami-080e1f13689e07408", // Ubuntu 22.04
+      instanceType: "t2.micro",
+      subnetId: publicSubnet1.id,
+      keyName: "MyKeyPair",
+      vpcSecurityGroupIds: [jumpBoxSecurityGroup.id],
+    });
+
+    const jumpBoxEip = new Eip(this, "JumpBoxEip", {
+      domain: "vpc",
+      instance: jumpBox.id,
+    });
+
+    new VpcSecurityGroupIngressRule(this, "JumpBoxIngressRule", {
+      securityGroupId: jumpBoxSecurityGroup.id,
+      ipProtocol: "tcp",
+      fromPort: 22,
+      toPort: 22,
+      cidrIpv4: "0.0.0.0/0",
+    });
+
+    new VpcSecurityGroupEgressRule(this, "JumpBoxEgressRule", {
+      securityGroupId: jumpBoxSecurityGroup.id,
+      ipProtocol: "-1",
+      fromPort: 0,
+      toPort: 0,
+      cidrIpv4: "0.0.0.0/0",
+    });
+
+    new VpcSecurityGroupIngressRule(this, "DbPrivateSubnet1IngressRule", {
+      securityGroupId: dbSecurityGroup.id,
+      ipProtocol: "tcp",
+      fromPort: 5432,
+      toPort: 5432,
+      cidrIpv4: privateSubnet1.cidrBlock,
+    });
+
+    new VpcSecurityGroupEgressRule(this, "DbPrivateSubnet1EgressRule", {
+      securityGroupId: dbSecurityGroup.id,
+      ipProtocol: "tcp",
+      fromPort: 5432,
+      toPort: 5432,
+      cidrIpv4: privateSubnet1.cidrBlock,
+    });
+
+    new VpcSecurityGroupIngressRule(this, "DbJumpboxIngressRule", {
+      securityGroupId: dbSecurityGroup.id,
+      ipProtocol: "tcp",
+      fromPort: 5432,
+      toPort: 5432,
+      cidrIpv4: `${jumpBox.privateIp}/32`,
+    });
+
+    new VpcSecurityGroupEgressRule(this, "DbJumpboxEgressRule", {
+      securityGroupId: dbSecurityGroup.id,
+      ipProtocol: "tcp",
+      fromPort: 5432,
+      toPort: 5432,
+      cidrIpv4: `${jumpBoxEip.privateIp}/32`,
+    });
+
     const dbUsername = new Password(this, "dbUsername", {
       length: 10,
       overrideSpecial: "!#$%&*()-_=+[]{}<>:?",
@@ -113,6 +191,7 @@ export class AwsStack extends TerraformStack {
       masterUserSecretKmsKeyId: dbKmsKey.keyId,
       skipFinalSnapshot: true,
       storageEncrypted: true,
+      vpcSecurityGroupIds: [dbSecurityGroup.id],
     });
 
     new RdsClusterInstance(this, "AuroraClusterInstance", {
@@ -159,53 +238,12 @@ export class AwsStack extends TerraformStack {
     });
 
     new RouteTableAssociation(this, "PrivateSubnetAssociation", {
-      subnetId: subnet2.id, // Assuming subnet2 is the private subnet
+      subnetId: privateSubnet1.id,
       routeTableId: privateRouteTable.id,
     });
 
     const ecsCluster = new EcsCluster(this, "ecsCluster", {
       name: "my-cluster",
-    });
-
-    const jumpBoxSecurityGroup = new SecurityGroup(
-      this,
-      "jumpBoxSecurityGroup",
-      {
-        vpcId: vpc.id,
-        name: "jump-box-sg",
-        description: "Security group for Jump Box",
-        ingress: [
-          {
-            description: "Allow SSH",
-            fromPort: 22,
-            toPort: 22,
-            protocol: "tcp",
-            cidrBlocks: ["0.0.0.0/0"],
-          },
-        ],
-        egress: [
-          {
-            description: "Allow all outbound",
-            fromPort: 0,
-            toPort: 0,
-            protocol: "-1",
-            cidrBlocks: ["0.0.0.0/0"],
-          },
-        ],
-      }
-    );
-
-    const jumpBox = new Instance(this, "jumpBox", {
-      ami: "ami-080e1f13689e07408", // Ubuntu 22.04
-      instanceType: "t2.micro",
-      subnetId: publicSubnet1.id,
-      keyName: "MyKeyPair", // replace with your key pair name
-      vpcSecurityGroupIds: [jumpBoxSecurityGroup.id],
-    });
-
-    const jumpBoxEip = new Eip(this, "JumpBoxEip", {
-      domain: "vpc",
-      instance: jumpBox.id,
     });
 
     const taskRole = new IamRole(this, "taskRole", {
@@ -301,7 +339,7 @@ export class AwsStack extends TerraformStack {
       desiredCount: 1,
       launchType: "FARGATE",
       networkConfiguration: {
-        subnets: [publicSubnet1.id, subnet2.id],
+        subnets: [publicSubnet1.id, publicSubnet2.id],
         assignPublicIp: true,
         securityGroups: [securityGroup.id],
       },
