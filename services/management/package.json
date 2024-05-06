@@ -7,14 +7,15 @@
   "license": "UNLICENSED",
   "scripts": {
     "nest": "yarn workspace @effective-tasklist/service_chassis run nest",
-    "build": "yarn run -T swc . -d ./dist --strip-leading-paths",
+    "typecheck": "yarn tools:typecheck --project $INIT_CWD/tsconfig.json",
+    "build": "yarn tools:build:service",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "yarn nest start",
-    "start:dev": "yarn nest start --watch management",
+    "start:dev": "yarn nest start --watch management -b swc",
     "start:debug": "yarn nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "yarn run -T eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "yarn run -T jest",
+    "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -22,9 +23,9 @@
   },
   "dependencies": {
     "@effective-tasklist/service_database": "workspace:*",
-    "@nestjs/common": "^10.0.0",
+    "@nestjs/common": "^10",
     "@nestjs/config": "^3.2.0",
-    "@nestjs/core": "^9.0.0",
+    "@nestjs/core": "^9",
     "@nestjs/mapped-types": "^2.0.4",
     "@nestjs/platform-express": "^10.0.0",
     "class-transformer": "^0.5.1",
@@ -35,23 +36,12 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "@jest/globals": "^29.7.0",
+    "@nestjs/cli": "^10.0.0",
+    "@swc/cli": "^0.3.9",
+    "@swc/core": "^1.4.16",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   }
 }

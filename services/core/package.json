@@ -24,7 +24,7 @@
   "dependencies": {
     "@effective-tasklist/service_database": "workspace:^",
     "@nestjs/config": "^3.2.0",
-    "@nestjs/core": "^9.0.0",
+    "@nestjs/core": "^10",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "*",
     "class-transformer": "*",
@@ -35,7 +35,7 @@
     "rxjs": "^7.8.1"
   },
   "peerDependencies": {
-    "@nestjs/common": "*"
+    "@nestjs/common": "^10"
   },
   "devDependencies": {
     "@nestjs/cli": "*",

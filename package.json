@@ -11,9 +11,9 @@
   ],
   "scripts": {
     "postinstall": "yarn constraints --fix",
-    "workspace:build": "yarn workspaces foreach -R run build",
+    "workspace:build": "yarn workspaces foreach -Rpt run build",
     "workspace:format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "workspace:lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "workspace:lint": "yarn workspaces foreach -Rpt run tools:lint"
   },
   "resolutions": {
     "drizzle-orm": "^0.30.4",
@@ -28,8 +28,9 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
-  "packageManager": "yarn@4.1.1",
+  "packageManager": "yarn@4.2.1",
   "devDependencies": {
+    "@yarnpkg/types": "^4.0.0",
     "tslib": "^2.6.2"
   }
 }

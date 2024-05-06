@@ -1,6 +1,9 @@
 import { Fn, TerraformOutput, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 
+import { Alb } from "@cdktf/provider-aws/lib/alb";
+import { AlbListener } from "@cdktf/provider-aws/lib/alb-listener";
+import { AlbTargetGroup } from "@cdktf/provider-aws/lib/alb-target-group";
 import { CloudwatchLogGroup } from "@cdktf/provider-aws/lib/cloudwatch-log-group";
 import { DbSubnetGroup } from "@cdktf/provider-aws/lib/db-subnet-group";
 import { EcrRepository } from "@cdktf/provider-aws/lib/ecr-repository";
@@ -23,6 +26,7 @@ import { RouteTableAssociation } from "@cdktf/provider-aws/lib/route-table-assoc
 import { SecurityGroup } from "@cdktf/provider-aws/lib/security-group";
 import { Subnet } from "@cdktf/provider-aws/lib/subnet";
 import { Vpc } from "@cdktf/provider-aws/lib/vpc";
+import { VpcEndpoint } from "@cdktf/provider-aws/lib/vpc-endpoint";
 import { VpcSecurityGroupEgressRule } from "@cdktf/provider-aws/lib/vpc-security-group-egress-rule";
 import { VpcSecurityGroupIngressRule } from "@cdktf/provider-aws/lib/vpc-security-group-ingress-rule";
 import { Password } from "@cdktf/provider-random/lib/password";
@@ -56,7 +60,6 @@ export class AwsStack extends TerraformStack {
       vpcId: vpc.id,
       cidrBlock: "10.0.100.0/24",
       availabilityZone: "us-east-1a",
-
       tags: {
         Name: "my-subnet-1",
       },
@@ -133,7 +136,7 @@ export class AwsStack extends TerraformStack {
 
     new VpcSecurityGroupEgressRule(this, "JumpBoxEgressRule", {
       securityGroupId: jumpBoxSecurityGroup.id,
-      ipProtocol: "-1",
+      ipProtocol: "tcp",
       fromPort: 0,
       toPort: 0,
       cidrIpv4: "0.0.0.0/0",
@@ -268,39 +271,32 @@ export class AwsStack extends TerraformStack {
         "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
     });
 
-    const ecrRepo = new EcrRepository(this, "EcrRepo", {
-      name: "my-ecr-repo", // replace with your repository name
+    new VpcEndpoint(this, "VpcEndpointEcrDkr", {
+      vpcId: vpc.id,
+      vpcEndpointType: "Interface",
+      serviceName: "com.amazonaws.us-east-1.ecr.dkr",
     });
 
-    const taskDefinition = new EcsTaskDefinition(this, "taskDefinition", {
-      family: "nginx-task",
-      cpu: "256",
-      memory: "512",
-      networkMode: "awsvpc",
-      requiresCompatibilities: ["FARGATE"],
-      executionRoleArn: taskRole.arn,
-      containerDefinitions: Fn.jsonencode([
-        {
-          name: "nginx",
-          image: `${ecrRepo.repositoryUrl}:alpine`,
-          essential: true,
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          logConfiguration: {
-            logDriver: "awslogs",
-            options: {
-              "awslogs-group": "/ecs/my-log-group",
-              "awslogs-region": "us-east-1",
-              "awslogs-stream-prefix": "ecs",
-            },
-          },
-        },
-      ]),
+    new VpcEndpoint(this, "VpcEndpointEcrApi", {
+      vpcId: vpc.id,
+      vpcEndpointType: "Interface",
+      serviceName: "com.amazonaws.us-east-1.ecr.api",
+    });
+
+    new VpcEndpoint(this, "VpcEndpointSecretsManager", {
+      vpcId: vpc.id,
+      vpcEndpointType: "Interface",
+      serviceName: "com.amazonaws.us-east-1.secretsmanager",
+    });
+
+    new VpcEndpoint(this, "VpcEndpointCloudWatch", {
+      vpcId: vpc.id,
+      vpcEndpointType: "Interface",
+      serviceName: "com.amazonaws.us-east-1.logs",
+    });
+
+    const ecrRepo = new EcrRepository(this, "EcrRepo", {
+      name: "my-ecr-repo",
     });
 
     const securityGroup = new SecurityGroup(this, "securityGroup", {
@@ -312,6 +308,13 @@ export class AwsStack extends TerraformStack {
           description: "Allow inbound HTTP",
           fromPort: 80,
           toPort: 80,
+          protocol: "tcp",
+          cidrBlocks: ["0.0.0.0/0"],
+        },
+        {
+          description: "Allow inbound HTTP - Container",
+          fromPort: 8080,
+          toPort: 8080,
           protocol: "tcp",
           cidrBlocks: ["0.0.0.0/0"],
         },
@@ -327,9 +330,71 @@ export class AwsStack extends TerraformStack {
       ],
     });
 
+    const alb = new Alb(this, "Alb", {
+      name: "my-alb",
+      internal: false,
+      loadBalancerType: "application",
+      securityGroups: [securityGroup.id],
+      subnets: [publicSubnet1.id, publicSubnet2.id],
+    });
+
+    const targetGroup = new AlbTargetGroup(this, "AlbTargetGroup", {
+      name: "my-target-group",
+      port: 8080,
+      protocol: "HTTP",
+      vpcId: vpc.id,
+      targetType: "ip",
+    });
+
+    new AlbListener(this, "AlbListener", {
+      loadBalancerArn: alb.arn,
+      port: 80,
+      protocol: "HTTP",
+      defaultAction: [
+        {
+          type: "forward",
+          targetGroupArn: targetGroup.arn,
+        },
+      ],
+    });
+
+    const containerDefinitions = {
+      name: "nginx",
+      image: `${ecrRepo.repositoryUrl}:${process.env.ECS_IMAGE_TAG}`,
+      essential: true,
+      portMappings: [
+        {
+          containerPort: 8080,
+          hostPort: 8080,
+          protocol: "tcp",
+        },
+      ],
+      healthCheck: {
+        command: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"],
+      },
+      logConfiguration: {
+        logDriver: "awslogs",
+        options: {
+          "awslogs-group": "/ecs/my-log-group",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+        },
+      },
+    };
+
+    const taskDefinition = new EcsTaskDefinition(this, "taskDefinition", {
+      family: "nginx-task",
+      cpu: "256",
+      memory: "512",
+      networkMode: "awsvpc",
+      requiresCompatibilities: ["FARGATE"],
+      executionRoleArn: taskRole.arn,
+      containerDefinitions: Fn.jsonencode([containerDefinitions]),
+    });
+
     new CloudwatchLogGroup(this, "LogGroup", {
-      name: "/ecs/my-log-group", // replace with your log group name
-      retentionInDays: 14, // replace with your desired retention period
+      name: "/ecs/my-log-group",
+      retentionInDays: 14,
     });
 
     new EcsService(this, "ecsService", {
@@ -343,6 +408,19 @@ export class AwsStack extends TerraformStack {
         assignPublicIp: true,
         securityGroups: [securityGroup.id],
       },
+      deploymentMaximumPercent: 200,
+      deploymentMinimumHealthyPercent: 50,
+      deploymentCircuitBreaker: {
+        enable: true,
+        rollback: true,
+      },
+      loadBalancer: [
+        {
+          targetGroupArn: targetGroup.arn,
+          containerName: "nginx",
+          containerPort: 8080,
+        },
+      ],
     });
 
     new TerraformOutput(this, "JumpBoxPublicIp", {

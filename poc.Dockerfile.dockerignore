@@ -1,0 +1,15 @@
+# Ignore everything
+*
+
+# But not these files...
+!eslintrc.cjs
+!**/eslintrc.cjs
+!prettierrc
+!tsconfig*
+!**/tsconfig*
+!.dockerignore
+!package.json
+!**/package.json
+!yarn.lock
+!.yarn/releases
+!.yarnrc.yml

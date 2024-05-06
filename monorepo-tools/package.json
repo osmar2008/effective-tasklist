@@ -2,14 +2,19 @@
   "name": "monorepo-tools",
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "biome:format": "yarn biome rage $INIT_CWD",
+    "tools:format": "cd $INIT_CWD && yarn biome format",
+    "tools:lint": "cd $INIT_CWD && yarn biome lint",
+    "tools:typecheck": "yarn run tsc",
     "ts-node": "ts-node"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.0",
     "@jest/globals": "^29.7.0",
+    "@swc/cli": "^0.3.9",
+    "@swc/core": "^1.4.16",
     "@types/node": "^20.11.28",
     "jest": "^29.7.0",
+    "swc": "^1.0.11",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.2"
