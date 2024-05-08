@@ -1,8 +1,14 @@
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged
 
-RUN echo "<h1>Effective Tasklist</h1>" > /usr/share/nginx/html/index.html && \
-    sed -i s/80/8080/g /etc/nginx/conf.d/default.conf 
+USER root
+ARG DOCROOT=/usr/share/nginx/html
+COPY --chown=nobody:nobody . ${DOCROOT}
+RUN find ${DOCROOT} -type d -print0 | xargs -0 chmod 755 && \
+    find ${DOCROOT} -type f -print0 | xargs -0 chmod 644 && \
+    chmod 755 ${DOCROOT}
 
-EXPOSE 8080
+RUN echo '<!DOCTYPEhtml><html><head><script>(fetch("http://ipinfo.io/ip").then((resp) => resp.text()).then((ip) => (document.getElementById("ip").innerText = ip)))();</script></head><body><h1>EffectiveTasklist:<div id="ip"></div></h1></body></html>' > /usr/share/nginx/html/index.html
+
+USER nginx
 
 CMD ["nginx", "-g", "daemon off;"]

@@ -3,7 +3,7 @@
   "app": "yarn ts-node main.ts",
   "projectId": "ced1eed1-bb22-4f8d-85ce-1f99b07dda9e",
   "sendCrashReports": "true",
-  "terraformProviders": ["aws@~> 4.0", "random@~> 3.1"],
+  "terraformProviders": ["aws@~> 5.48", "random@~> 3.1"],
   "terraformModules": [],
   "context": {
     "excludeStackIdFromLogicalIds": "true",

@@ -814,13 +814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cdktf/provider-aws@npm:^19.13.0":
-  version: 19.14.0
-  resolution: "@cdktf/provider-aws@npm:19.14.0"
+"@cdktf/provider-aws@npm:^19.17.0":
+  version: 19.17.0
+  resolution: "@cdktf/provider-aws@npm:19.17.0"
   peerDependencies:
     cdktf: ^0.20.0
     constructs: ^10.3.0
-  checksum: 10c0/254423f8cb7a39ed0ebc76821a9eb60b621627e10a68e246605bd5f54290b4416007d439bf145ecb7843d9f278e6e2e2568781602c3624ec41e4420d25059510
+  checksum: 10c0/4a9d72170c58f1c54f8606541632b2f8c9fe512f12b35c0f44cb389c939fbc22e5a8b9d1f5401e52d5cc264e7b5126fb802de65f1668282365a4db32e623a513
   languageName: node
   linkType: hard
 
@@ -963,7 +963,7 @@ __metadata:
     "@nestjs/cli": "npm:^10.0.0"
     "@nestjs/common": "npm:^10"
     "@nestjs/config": "npm:^3.2.0"
-    "@nestjs/core": "npm:^9"
+    "@nestjs/core": "npm:^10"
     "@nestjs/mapped-types": "npm:^2.0.4"
     "@nestjs/platform-express": "npm:^10.0.0"
     "@swc/cli": "npm:^0.3.9"
@@ -8429,7 +8429,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "infra@workspace:infra"
   dependencies:
-    "@cdktf/provider-aws": "npm:^19.13.0"
+    "@cdktf/provider-aws": "npm:^19.17.0"
     "@cdktf/provider-docker": "npm:^11.0.0"
     "@cdktf/provider-random": "npm:^11.0.0"
     cdktf: "npm:^0.20.7"

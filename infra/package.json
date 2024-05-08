@@ -10,6 +10,7 @@
     "build": "tsc",
     "synth": "cdktf synth --hcl",
     "compile": "tsc --pretty",
+    "deploy": "cdktf deploy",
     "watch": "tsc -w",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -20,7 +21,7 @@
     "node": ">=18.0"
   },
   "dependencies": {
-    "@cdktf/provider-aws": "^19.13.0",
+    "@cdktf/provider-aws": "^19.17.0",
     "@cdktf/provider-docker": "^11.0.0",
     "@cdktf/provider-random": "^11.0.0",
     "cdktf": "^0.20.7",
