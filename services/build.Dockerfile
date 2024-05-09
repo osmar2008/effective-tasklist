@@ -1,14 +1,14 @@
-FROM effective-tasklist:base-latest
+FROM node:18-alpine
 
 ARG service_folder
 
 WORKDIR /usr/src/app/services/
 
-COPY eslint.config.js .
-COPY ./${service_folder}/* ./${service_folder}/.swcrc ./${service_folder}/
+COPY ./services/.swcrc ./
 
-RUN yarn eslint ${service_folder} --fix && \
-    yarn tsc -p ./${service_folder}/tsconfig.build.json --noEmit && \
-    cd ${service_folder} && \
+COPY ./services/${service_folder} ./${service_folder}/
+
+RUN cd ${service_folder} && \
+    yarn tsc -p ./tsconfig.build.json --noEmit && \
     yarn run -T swc . -d ./dist && \
     yarn workspaces focus --production ${service_folder}
