@@ -6279,6 +6279,7 @@ __metadata:
   dependencies:
     "@yarnpkg/types": "npm:^4.0.0"
     tslib: "npm:^2.6.2"
+    zx: "npm:^8.0.2"
   languageName: unknown
   linkType: soft
 
