@@ -5,6 +5,7 @@
   "types": "main.ts",
   "license": "MPL-2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "get": "cdktf get",
     "build": "tsc",
@@ -26,7 +27,8 @@
     "@cdktf/provider-random": "^11.0.0",
     "cdktf": "^0.20.7",
     "cdktf-cli": "^0.20.7",
-    "constructs": "^10.3.0"
+    "constructs": "^10.3.0",
+    "zx": "^8.0.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.1"
