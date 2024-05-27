@@ -13,3 +13,4 @@
 !yarn.lock
 !.yarn/releases
 !.yarnrc.yml
+!plugin.cjs

@@ -1,18 +1,17 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "../tsconfig.json",
-  "include": ["./src/*.ts", "./src/**/*.ts"],
-  "exclude": ["**/*.spec.ts", "test"],
-  "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "outDir": "./dist",
-    "baseUrl": "src"
-  },
-  "references": [
-    {
-      "path": "../common-database"
-    }
-  ]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "../tsconfig.json",
+	"include": ["./src/*.ts", "./src/**/*.ts"],
+	"exclude": ["**/*.spec.ts", "test"],
+	"compilerOptions": {
+		"module": "Node16",
+		"moduleResolution": "Node16",
+		"outDir": "./dist",
+		"baseUrl": "src"
+	},
+	"references": [
+		{
+			"path": "../common-database"
+		}
+	]
 }

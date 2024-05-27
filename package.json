@@ -1,39 +1,28 @@
 {
-  "name": "effective-tasklist-monorepo",
-  "version": "0.0.1",
-  "description": "",
-  "private": true,
-  "workspaces": [
-    "monorepo-tools",
-    "client",
-    "services",
-    "infra"
-  ],
-  "scripts": {
-    "postinstall": "yarn constraints --fix",
-    "workspace:build": "yarn workspaces foreach -Rpt run build",
-    "workspace:format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "workspace:lint": "yarn workspaces foreach -Rpt run tools:lint"
-  },
-  "resolutions": {
-    "drizzle-orm": "^0.30.4",
-    "@nestjs/common": "^9",
-    "@nestjs/config": "^3.2.0",
-    "@nestjs/core": "^9",
-    "@nestjs/mapped-types": "^2.0.4",
-    "@nestjs/platform-express": "^9",
-    "@nestjs/testing": "^9",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
-  },
-  "packageManager": "yarn@4.2.1",
-  "devDependencies": {
-    "@yarnpkg/types": "^4.0.0",
-    "tslib": "^2.6.2"
-  },
-  "dependencies": {
-    "zx": "^8.0.2"
-  }
+	"name": "effective-tasklist-monorepo",
+	"version": "0.0.1",
+	"description": "",
+	"packageManager": "yarn@4.2.1",
+	"private": true,
+	"workspaces": [
+		"monorepo-tools",
+		"client",
+		"services",
+		"infra"
+	],
+	"scripts": {
+		"postinstall": "yarn constraints --fix",
+		"workspace:build": "yarn workspaces foreach -Rpt run build",
+		"workspace:format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+		"workspace:lint": "yarn workspaces foreach -Rpt run tools:lint"
+	},
+	"dependencies": {
+		"@yarnpkg/cli": "^4.2.2",
+		"clipanion": "4.0.0-rc.3",
+		"zx": "^8.0.2"
+	},
+	"devDependencies": {
+		"@yarnpkg/types": "4.0.0",
+		"tslib": "^2.6.2"
+	}
 }

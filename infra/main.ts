@@ -1,9 +1,7 @@
-import { App } from "cdktf";
+import { App } from 'cdktf'
 
-import { AwsStack } from "./stacks/aws/aws-stack";
-import { LocalStack } from "./stacks/local/local-stack";
+import { AwsStack } from './stacks/aws/aws-stack'
 
-const app = new App();
-new LocalStack(app, "local");
-new AwsStack(app, "aws");
-app.synth();
+const app = new App()
+new AwsStack(app, 'aws')
+app.synth()

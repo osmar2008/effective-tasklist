@@ -7,5 +7,7 @@ tsconfig*
 package.json
 **/package.json
 yarn.lock
-.yarn/releases
+.yarn
 .yarnrc.yml
+dist
+.env

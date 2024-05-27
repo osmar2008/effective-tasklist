@@ -30,6 +30,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tsx": "^4.10.5"
   }
 }
