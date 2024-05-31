@@ -2,10 +2,11 @@ build:
   script:
     - BASE_POINT=`curl --header "PRIVATE-TOKEN:$API_READ_TOKEN" "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/pipelines?ref=${CI_COMMIT_BRANCH}&status=success&per_page=1" | jq -r '.[0] |.sha'`
     - echo $BASE_POINT
-    - docker build -f base.Dockerfile --build-arg service_folder=management --build-arg BASE_IMAGE=$AWS_ECR_URL/ecr-repo:base-$BASE_POINT \
-       --cache-from=type=registry,ref=BASE_IMAGE=$AWS_ECR_URL/ecr-repo:base-$BASE_POINT \
-       --cache-from=type=registry,ref=$AWS_ECR_URL/ecr-repo:base-$CI_COMMIT_SHORT_SHA \
-       --cache-to=type=registry,ref=$AWS_ECR_URL/ecr-repo:build-$CI_COMMIT_SHORT_SHA,mode=max,image-manifest=true
+    - docker build -f base.Dockerfile \
+       --cache-from=type=local,ref=BASE_IMAGE=$AWS_ECR_URL/ecr-repo:base-$BASE_POINT \
+       --cache-from=type=local,ref=$AWS_ECR_URL/ecr-repo:base-$CI_COMMIT_SHORT_SHA \
+       --cache-to=type=local,ref=$AWS_ECR_URL/ecr-repo:build-$CI_COMMIT_SHORT_SHA,mode=max,image-manifest=true \
+        -t $AWS_ECR_URL/ecr-repo:build-$CI_COMMIT_SHORT_SHA --load .
 
 test_unit:
   script:

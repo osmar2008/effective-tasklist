@@ -15969,11 +15969,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3Anext#optional!builtin<compat/typescript>":
   version: 5.5.0-dev.20240418
-  resolution: "typescript@patch:typescript@npm%3A5.5.0-dev.20240418#optional!builtin<compat/typescript>::version=5.5.0-dev.20240418&hash=5adc0c"
+  resolution: "typescript@patch:typescript@npm%3A5.5.0-dev.20240418#optional!builtin<compat/typescript>::version=5.5.0-dev.20240418&hash=b45daf"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/07df1ab66e963dfef1a0a23d51b22e6eb7ecba4ebeab2aacb995e3735e4823dc48b6ce10a199304d18bd31bc8ad233d03e86e3149dcdebd7083361a1e5aad530
+  checksum: 10c0/de6ad128cbb39138399a960533f3ffb324fff736b492497a7918d63e89f17a9ff3c1a77414e31d88fe7a754d36d7e410a7f642fb9620bc0c06a6afb9873ab235
   languageName: node
   linkType: hard
 
