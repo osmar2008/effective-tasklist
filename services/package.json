@@ -5,7 +5,7 @@
 	"workspaces": [
 		"management",
 		"core",
-		"common-database"
+		"common-*"
 	],
 	"scripts": {
 		"build:management": "yarn swc ./management/src -d ./management/dist",

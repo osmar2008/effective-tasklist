@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
-const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION')
+export const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION')
 
 @Global()
 @Module({
