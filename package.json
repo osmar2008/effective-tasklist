@@ -2,7 +2,7 @@
 	"name": "effective-tasklist-monorepo",
 	"version": "0.0.1",
 	"description": "",
-	"packageManager": "yarn@4.2.1",
+	"packageManager": "yarn@4.3.0",
 	"private": true,
 	"workspaces": [
 		"monorepo-tools",
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@yarnpkg/cli": "^4.2.2",
 		"clipanion": "4.0.0-rc.3",
-		"zx": "^8.0.2"
+		"zx": "^8.1.2"
 	},
 	"devDependencies": {
 		"@yarnpkg/types": "4.0.0",
